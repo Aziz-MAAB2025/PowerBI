@@ -1,0 +1,174 @@
+1. What is the difference between "Merge" and "Append" in Power Query?
+Operation	Purpose	Analogy
+Merge	Combines columns from two tables based on a common key (e.g., CustID).	SQL JOIN
+Append	Combines rows from two or more tables with the same structure.	SQL UNION
+
+✅ Example:
+
+Merge: Combine Orders with Customers to get Email.
+
+Append: Combine Orders_Jan and Orders_Feb into one dataset.
+
+2. How do you split a "Full Name" column into "First Name" and "Last Name"?
+
+Steps:
+
+Select the Full Name column → Home → Split Column → By Delimiter → Space (" ")
+
+Rename resulting columns: First Name, Last Name
+
+M-code:
+
+Table.SplitColumn(Source, "Full Name", Splitter.SplitTextByDelimiter(" ", QuoteStyle.Csv), {"First Name", "Last Name"})
+
+3. What is "Pivot Columns" used for?
+
+Pivot Columns transforms rows into columns — it aggregates values for each unique category.
+
+✅ Example: Pivot Product column to show total Quantity per product per customer.
+
+4. How do you undo a step in Power Query?
+
+In Applied Steps pane (right side):
+
+Click the “X” next to the step name to delete it.
+
+Or press Ctrl + Z immediately after performing a step.
+
+5. What is the purpose of "Reference" vs. "Duplicate" in queries?
+Option	Description	Use Case
+Duplicate	Creates a full copy of the query and its data steps (independent).	When you want to modify separately.
+Reference	Creates a new query that references another query’s output (linked).	When you want multiple queries built from the same base.
+
+✅ Reference = lighter, faster.
+Duplicate = independent copy.
+
+6. Merge Orders.csv and Customers.xlsx on CustID (inner join).
+
+Steps:
+
+Load both Orders and Customers into Power Query.
+
+Go to Home → Merge Queries → Select “CustID” in both tables → Join kind: Inner.
+
+M-code:
+
+Table.NestedJoin(Orders, {"CustID"}, Customers, {"CustID"}, "CustomerData", JoinKind.Inner)
+
+
+Then expand CustomerData to include Name and Email.
+
+7. Pivot the Product column to show total Quantity per product.
+
+Steps:
+
+Select CustID as the key column.
+
+Go to Transform → Pivot Column.
+
+Pivot: Product, Values: Quantity, Aggregation: Sum.
+
+M-code:
+
+Table.Pivot(Table.TransformColumnTypes(Source, {{"Product", type text}}, "en-US"), List.Distinct(Source[Product]), "Product", "Quantity", List.Sum)
+
+
+✅ Output: each product becomes a column (Laptop, Mouse, etc.) showing total quantities.
+
+8. Append two tables with identical columns (e.g., Orders_Jan.csv + Orders_Feb.csv).
+
+Steps:
+
+Load both queries.
+
+Go to Home → Append Queries → Select both tables → OK.
+
+M-code:
+
+Table.Combine({Orders_Jan, Orders_Feb})
+
+
+✅ Merges the rows into a single dataset.
+
+9. Use "Fill Down" to replace nulls in the Email column with the previous value.
+
+Steps:
+
+Select Email column → Transform → Fill → Down
+
+M-code:
+
+Table.FillDown(Source, {"Email"})
+
+10. Extract the domain (e.g., "example.com") from the Email column.
+
+Steps:
+
+Add Column → Column From Examples → Extract domain part
+or use M-code:
+
+Table.AddColumn(Source, "Domain", each Text.AfterDelimiter([Email], "@"))
+
+
+✅ Output: example.com
+
+11. Write M-code to merge queries dynamically based on a parameter (e.g., JoinType = "Inner").
+
+First, create a parameter called JoinType with values like "Inner", "LeftOuter", etc.
+Then use:
+
+Table.NestedJoin(Orders, {"CustID"}, Customers, {"CustID"}, "Merged", JoinKind.FromText(JoinType))
+
+
+✅ The merge type changes dynamically depending on the parameter’s value.
+
+12. Unpivot a table with columns like "Jan_Sales," "Feb_Sales" into "Month" and "Sales" format.
+
+Steps:
+
+Select columns to keep fixed (e.g., CustID, Name).
+
+Go to Transform → Unpivot Other Columns.
+
+M-code:
+
+Table.UnpivotOtherColumns(Source, {"CustID", "Name"}, "Month", "Sales")
+
+
+✅ Converts wide data into a normalized “long” format.
+
+13. Handle errors in a custom column (e.g., division by zero) using try...otherwise.
+Table.AddColumn(Source, "SafeDivision", each try [Quantity] / [Price] otherwise null)
+
+
+✅ Prevents refresh errors by returning null or a custom message if an error occurs.
+
+14. Create a function in Power Query to clean phone numbers (e.g., remove dashes).
+CleanPhone = (phone as text) as text =>
+    Text.Select(phone, {"0".."9"})
+
+
+Usage example:
+
+Table.AddColumn(Source, "CleanPhone", each CleanPhone([Phone]))
+
+
+✅ Removes -, (, ), spaces — leaving only digits.
+
+15. Optimize a query with 10+ steps — identify bottlenecks and simplify.
+
+Best practices:
+
+Remove unnecessary columns early.
+
+Filter before merge or group to reduce data volume.
+
+Avoid repeated transformations (e.g., multiple sorts).
+
+Disable load for intermediate queries (Right-click → Disable Load).
+
+Combine related steps manually (e.g., merge + expand in one go).
+
+Use native query folding when connected to SQL (so filtering happens at the source).
+
+✅ The fewer steps and smaller datasets Power Query has to process, the faster the refresh.
