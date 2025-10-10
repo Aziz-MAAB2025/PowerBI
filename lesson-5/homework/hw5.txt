@@ -1,0 +1,177 @@
+1. What is a primary key in a table?
+
+A primary key is a column (or set of columns) that uniquely identifies each record in a table.
+✅ Example:
+
+In Customer, the CustomerID uniquely identifies each customer.
+
+In Products, the ProductID is the primary key.
+
+2. Name the two types of table relationships in Power BI.
+
+One-to-Many (1:*): One record in one table relates to many records in another.
+
+Many-to-Many (:): Records in both tables can have multiple matches.
+
+(There’s also One-to-One, but it’s less common.)
+
+3. How do you create a relationship between two tables in Power BI?
+
+Steps:
+
+Go to Model view.
+
+Drag and drop the related columns (e.g., CustomerID from Customer to Sales).
+
+Power BI automatically detects the cardinality (e.g., One-to-Many).
+
+✅ Result: a relationship line with “1” on the Customer side and “*” on the Sales side.
+
+4. What is a "star schema"?
+
+A star schema is a database design where:
+
+A central Fact Table (e.g., Sales) stores quantitative data (measures).
+
+Surrounding Dimension Tables (e.g., Customer, Products, Date) store descriptive attributes.
+
+Visually, it looks like a star ⭐ — the fact table is in the center, connected to dimensions.
+
+5. Which table is typically the fact table in a sales dataset?
+
+✅ The Sales table is the Fact Table — it contains measurable business data such as Quantity, Revenue, and OrderDate.
+
+6. Link Sales.csv to Customers.csv using CustomerID (one-to-many).
+
+Customer[CustomerID] → Sales[CustomerID]
+
+Relationship type: One-to-Many (1:*)
+
+Cross filter direction: Single
+
+✅ Each customer can have many sales.
+
+7. Why is ProductID in Sales.csv a foreign key?
+
+Because it refers to (or “points to”) a record in another table — the Products table.
+
+Products.ProductID = primary key
+
+Sales.ProductID = foreign key linking back to it.
+
+This ensures each product in Sales exists in the Products table.
+
+8. Fix a relationship error where ProductID has mismatched data types.
+
+Solution:
+
+Go to Model view → Column tools.
+
+Ensure both Sales[ProductID] and Products[ProductID] have the same data type (e.g., Whole Number).
+
+If not, change one using Power Query or DAX.
+
+✅ Relationships require matching data types.
+
+9. Explain why a star schema improves performance.
+
+Simpler joins: Only one level of relationships between fact and dimensions.
+
+Faster queries: Power BI’s VertiPaq engine compresses columns better.
+
+Reduces ambiguity: No circular relationships.
+
+Enables DAX optimization: Functions like RELATED and SUMMARIZE work efficiently.
+
+10. Add a new column TotalSales in Sales (Quantity * Price from Products).
+
+Use a calculated column (DAX):
+
+TotalSales = Sales[Quantity] * RELATED(Products[Price])
+
+
+✅ RELATED fetches the corresponding price from the Products table via the existing relationship.
+
+11. Optimize a model with circular relationships — how would you resolve it?
+
+Remove unnecessary links (keep one clear path).
+
+Use DAX functions (e.g., USERELATIONSHIP()) instead of extra relationships.
+
+Introduce bridge tables to break loops.
+✅ Example: If both Sales → Products and Sales → Categories cause a loop, merge the category info into Products.
+
+12. Create a role-playing dimension for OrderDate and ShipDate.
+
+Steps:
+
+Duplicate the Date table:
+
+Date (Order)
+
+Date (Ship)
+
+Create separate relationships:
+
+Sales[OrderDate] → Date (Order)[Date]
+
+Sales[ShipDate] → Date (Ship)[Date]
+
+✅ Allows different date analyses (e.g., Orders vs. Shipments).
+
+13. Handle a many-to-many relationship between Customers and Products.
+
+Since many customers can buy many products:
+
+Create a bridge table like Sales that contains unique combinations of CustomerID and ProductID.
+
+Use it to connect both Customers and Products indirectly.
+
+✅ Avoids ambiguous relationships and allows aggregation through the bridge.
+
+14. Use bidirectional filtering sparingly — when is it appropriate?
+
+Use bidirectional filtering only when both tables need to filter each other for analysis.
+✅ Example:
+
+In a reporting matrix combining Customer and Product, enabling two-way filtering ensures totals match across both dimensions.
+⚠️ Avoid using it everywhere — it increases complexity and risk of circular dependencies.
+
+15. Write DAX to enforce referential integrity if a CustomerID is deleted.
+
+You can use DAX to flag or handle missing customers:
+
+IsCustomerValid = 
+IF(
+    ISBLANK(RELATED(Customer[Name])),
+    "Missing Customer",
+    "Valid"
+)
+
+
+✅ If a CustomerID in Sales no longer exists in Customer, it shows “Missing Customer”.
+
+🔹 BONUS: Star Schema Example (Your Model)
+
+Fact Table:
+Sales (OrderID, CustomerID, ProductID, Quantity, OrderDate)
+
+Dimension Tables:
+
+Customer (CustomerID, Name, Region)
+
+Products (ProductID, ProductName, Category, Price)
+
+Date (Date, Month, Year, Quarter)
+
+Relationships:
+
+Customer[CustomerID] → Sales[CustomerID] (1:*)
+
+Products[ProductID] → Sales[ProductID] (1:*)
+
+Date[Date] → Sales[OrderDate] (1:*)
+
+✅ This model is efficient, scalable, and ready for DAX measures like:
+
+Total Revenue = SUMX(Sales, Sales[Quantity] * RELATED(Products[Price]))
