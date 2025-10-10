@@ -1,0 +1,132 @@
+1. List three data sources Power BI can connect to.
+
+Power BI can connect to:
+
+Excel files (.xlsx, .xls)
+
+SQL Server databases
+
+Web APIs or online services (like SharePoint, Salesforce)
+
+Other examples include CSV files, JSON, Oracle, and Azure databases.
+
+2. What is the first step to import data into Power BI Desktop?
+
+Go to the Home tab → Get Data → Choose Data Source (e.g., Excel, CSV, SQL Server) → click Connect.
+
+3. How do you refresh imported data in Power BI?
+
+In Power BI Desktop: Click Refresh on the Home tab.
+
+In Power BI Service: Set up a scheduled refresh if using a gateway or cloud source.
+
+4. What file formats can Power BI import directly? (Name two.)
+
+CSV (.csv)
+
+Excel (.xlsx)
+Others include XML, JSON, and text files.
+
+5. What does the "Navigator" window show after selecting a data source?
+
+The Navigator displays:
+
+All tables or sheets available in the data source.
+
+A preview of the data before loading.
+You can select one or multiple tables to load or transform.
+
+6. Import Sales_Data.csv and load only the "Product" and "Price" columns.
+
+Steps:
+
+Home → Get Data → Text/CSV → select Sales_Data.csv.
+
+In the Navigator, click Transform Data.
+
+In Power Query, right-click on unwanted columns (e.g., OrderID, Quantity, OrderDate) → Remove Columns.
+
+Click Close & Load.
+
+✅ Result: Only Product and Price columns are imported.
+
+7. How would you change OrderDate to a date format during import?
+
+In Power Query Editor:
+
+Select the OrderDate column.
+
+Go to Transform → Data Type → Date.
+Power Query automatically converts the column to date format (e.g., 2023-05-01).
+
+8. What is the difference between "Load" and "Transform Data" in the import dialog?
+Option	Description
+Load	Immediately imports data as-is into Power BI.
+Transform Data	Opens Power Query Editor to clean, filter, and modify data before loading.
+9. Why might you see an error when connecting to a SQL database? (Name one reason.)
+
+Possible reasons:
+
+Incorrect server name or credentials.
+
+Firewall restrictions blocking the connection.
+
+Missing drivers (e.g., SQL Server Native Client).
+
+10. How do you replace a data source after importing it?
+
+Go to:
+Home → Data source settings → Change Source → Browse or enter new file path / server name → OK → Apply changes.
+
+11. Write the M-code to import only rows where Quantity > 1.
+let
+    Source = Csv.Document(File.Contents("Sales_Data.csv"), [Delimiter=",", Columns=5, Encoding=65001, Header=true]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    FilteredRows = Table.SelectRows(PromoteHeaders, each [Quantity] > 1)
+in
+    FilteredRows
+
+
+✅ This filters the table to include only orders where Quantity > 1.
+
+12. How would you change the data source if Sales_Data.csv changed?
+
+If the file name or path changed:
+Go to Home → Data source settings → Change Source → Browse to the new file.
+
+If only data structure changed (e.g., new column):
+Click Refresh or adjust Power Query steps accordingly.
+
+13. Troubleshoot: Your CSV import fails due to a "mixed data type" error—how do you fix it?
+
+Solutions:
+
+In Power Query, set a consistent data type (e.g., convert all numeric values to Number).
+
+Use Replace Errors or Remove Errors in the Transform tab.
+
+If a column mixes numbers and text, change its type to Text before loading.
+
+14. Connect to a live SQL database with parameters (e.g., filter by year).
+
+Go to Home → Get Data → SQL Server.
+
+Enter Server name and Database name.
+
+Click Advanced options → Write SQL query:
+
+SELECT * FROM Sales WHERE YEAR(OrderDate) = @Year
+
+
+Create a parameter called Year in Power Query and link it to this query.
+✅ This allows dynamic filtering by year.
+
+15. How would you automate data imports using Power BI and Power Automate?
+
+Use Power Automate flows to:
+
+Upload or refresh files (like CSVs) in OneDrive or SharePoint.
+
+Trigger a Power BI dataset refresh after the file is updated.
+
+This ensures data in Power BI is always up to date automatically.
