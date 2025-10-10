@@ -1,1 +1,60 @@
+### 1. What is Power BI, and what are its three main components?
+Power BI is a unified, scalable platform for self-service and enterprise business intelligence (BI) that enables users to connect to, visualize, and share data insights across applications. Its three main components are:
+- **Power BI Desktop**: A free Windows application for creating reports and data models.
+- **Power BI Service**: A cloud-based SaaS platform for publishing, sharing, and collaborating on reports.
+- **Power BI Mobile**: Apps for iOS and Android that allow users to view and interact with reports on mobile devices.
 
+### 2. Name two business use cases for Power BI dashboards.
+- **Sales Performance Tracking**: Dashboards can visualize real-time sales data from multiple sources to monitor KPIs like revenue trends and regional performance, enabling quick decision-making.
+- **Inventory Management**: Businesses can use dashboards to track stock levels, predict shortages, and optimize supply chains by integrating data from ERP systems.
+
+### 3. How do you download and install Power BI Desktop?
+To download and install Power BI Desktop:
+1. Visit the official Microsoft Download Center at [https://www.microsoft.com/en-us/download/details.aspx?id=58494](https://www.microsoft.com/en-us/download/details.aspx?id=58494).
+2. Select the version matching your Windows OS architecture (x86 or x64).
+3. Download the .exe file and run it to install.
+Alternatively, install it directly from the Microsoft Store for automatic updates. No additional prerequisites are needed beyond a compatible Windows version (10 or later).
+
+### 4. What is the difference between Power BI Desktop and Power BI Service?
+| Aspect              | Power BI Desktop                          | Power BI Service                          |
+|---------------------|-------------------------------------------|-------------------------------------------|
+| **Primary Use**    | Local report creation, data modeling, and visualization on a Windows machine. | Cloud-based sharing, collaboration, scheduling refreshes, and consumption of reports. |
+| **Accessibility**  | Installed app; offline work possible.    | Web-based; requires internet for full features. |
+| **Cost**           | Free.                                     | Free for personal use; Pro/Premium for sharing. |
+| **Features**       | Advanced authoring tools like Power Query and DAX. | Dashboards, workspaces, and app publishing; limited authoring. |
+
+### 5. What file extension does a Power BI project use?
+A Power BI project (report file) uses the .pbix extension, which stands for Power BI Exchange and stores reports, data models, and queries.
+
+### 6. Explain the role of Power Query in Power BI.
+Power Query is Power BI's data connectivity and transformation engine, allowing users to import data from hundreds of sources (e.g., databases, files, web), clean and reshape it (e.g., remove duplicates, merge tables), and prepare it for analysis without writing code. It uses a graphical interface with M language under the hood, ensuring repeatable ETL (Extract, Transform, Load) processes.
+
+### 7. Why would a business prefer Power BI over Excel for reporting?
+Businesses prefer Power BI for its scalability with large datasets (handling millions of rows vs. Excel's ~1 million limit), real-time data refresh capabilities, interactive visualizations, and seamless integration with enterprise tools like Azure and SQL Server. It also supports collaborative sharing and AI-driven insights, reducing manual updates and errors common in Excel.
+
+### 8. Describe one limitation of the free version of Power BI.
+One key limitation is that users with a free license cannot share reports or dashboards with others in the Power BI Service; they can only create and view content for personal use, requiring a Pro or Premium license for collaboration.
+
+### 9. What is a "published report" in Power BI Service?
+A published report is a .pbix file uploaded from Power BI Desktop to the Power BI Service, making it available for viewing, sharing, and embedding in apps or websites. It supports features like scheduled data refreshes and workspace collaboration once published.
+
+### 10. How does Power BI Mobile enhance accessibility?
+Power BI Mobile enhances accessibility by providing native iOS and Android apps that support screen readers, keyboard navigation, high-contrast modes, and WCAG 2.1 compliance, allowing users to interact with reports on the go. It includes mobile-optimized layouts, focus mode for detailed views, and data table exports, ensuring reports are usable for visually impaired or remote users.
+
+### 11. Compare Power BI with Tableau—pros and cons.
+| Tool       | Pros                                                                 | Cons                                                                 |
+|------------|----------------------------------------------------------------------|----------------------------------------------------------------------|
+| **Power BI** | - Cost-effective (free Desktop, affordable Pro at $10/user/month).<br>- Deep Microsoft ecosystem integration (e.g., Excel, Azure).<br>- Scalable for enterprise with AI features and real-time data. | - Steeper learning curve for DAX formulas.<br>- Limited custom visualization flexibility compared to Tableau.<br>- Performance can lag with very large datasets. |
+| **Tableau** | - Superior visualization options and drag-and-drop ease for non-technical users.<br>- Handles massive datasets efficiently.<br>- Strong community and storytelling features. | - Higher cost (starts at $70/user/month).<br>- Less seamless integration outside Microsoft stack.<br>- Steeper initial learning for advanced features. |
+
+### 12. Explain how Power BI integrates with Azure services.
+Power BI integrates natively with Azure through services like Azure Synapse Analytics for data warehousing, Azure Data Lake for storage, and Azure Machine Learning for AI predictions embedded in reports. It uses Power BI Embedded (a PaaS on Azure) to host interactive reports in custom apps, supports Azure Active Directory for authentication, and enables direct queries to Azure SQL Database for real-time analytics.
+
+### 13. What are "gateways" in Power BI, and when are they needed?
+Gateways in Power BI are software bridges installed on-premises to securely connect cloud-based Power BI to on-premises data sources (e.g., SQL Server, SharePoint). They handle encrypted queries and credential management without moving data to the cloud. They are needed when datasets are behind firewalls or in hybrid environments, ensuring scheduled refreshes and live connections without exposing local networks.
+
+### 14. How would you convince a company to adopt Power BI? (ROI argument)
+To convince a company, emphasize Power BI's ROI through rapid time-to-insight (e.g., reports built in hours vs. days in spreadsheets, saving 30-50% on reporting time) and productivity gains (a Forrester study showed Microsoft 365 + Power BI users achieved 25% higher efficiency). Initial costs are low ($10/user/month for Pro), with quick wins like reduced manual errors and better decisions leading to 3-5x ROI in the first year via optimized operations, such as 20% faster sales forecasting.
+
+### 15. What security features does Power BI offer for sensitive data?
+Power BI offers robust security including row-level security (RLS) to filter data by user roles, sensitivity labels and data loss prevention (DLP) policies to detect and block sensitive info sharing, multi-factor authentication via Azure AD, and encryption at rest/transit. It also supports audit logs, endpoint protection, and compliance with standards like GDPR and HIPAA for governed access in multitenant environments.
