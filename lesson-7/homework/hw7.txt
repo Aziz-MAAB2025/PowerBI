@@ -1,0 +1,165 @@
+📁 Step 1: Import the Dataset
+
+File: Retail_Sales_Data.xlsx
+
+Steps:
+
+Open Power BI Desktop.
+
+Go to Home → Get Data → Excel.
+
+Select your file Retail_Sales_Data.xlsx.
+
+Choose the worksheet containing your data (e.g., Sheet1).
+
+Click Load.
+
+🧾 Example Data Loaded
+OrderID	Date	Product	Region	Sales	Profit
+2001	1/1/2023	Laptop	North	1200	300
+2002	1/5/2023	Mouse	South	125	25
+2003	1/10/2023	Keyboard	East	80	15
+📊 Step 2: Create a Table Visual (Region and Sales)
+
+In Report View, select Table visual.
+
+Drag Region → Values.
+
+Drag Sales → Values.
+✅ You now have a simple table showing total Sales per Region.
+
+🎛 Step 3: Add a Slicer for Product
+
+Select the Slicer icon from the Visualizations pane.
+
+Drag Product into the slicer’s field well.
+
+Users can now filter the entire page by selecting specific products.
+
+🎨 Step 4: Format Dashboard Theme to “Dark Mode”
+
+Go to View → Themes → Dark (or choose Customize current theme).
+
+Select darker background colors and lighter text for visual contrast.
+
+🧠 Step 5: What is the purpose of the Data/Model View?
+View	Purpose
+Data View	Lets you inspect and clean your imported data (view columns, apply transformations).
+Model View	Shows relationships between tables (one-to-many links, cardinality). It’s essential for combining multiple tables or enabling cross-filtering between visuals.
+📈 Step 6: Build the Dashboard
+🟩 a) Bar Chart – Sales by Region
+
+Add a Clustered Bar Chart.
+
+Drag Region → Axis.
+
+Drag Sales → Values.
+→ Shows total sales per region.
+
+🟦 b) Line Chart – Sales over Date
+
+Add a Line Chart.
+
+Drag Date → X-axis.
+
+Drag Sales → Y-axis.
+→ Shows sales trend over time.
+
+🟨 c) Card – Total Profit
+
+Add a Card visual.
+
+Drag Profit → Fields.
+→ Displays the total Profit value at a glance.
+
+🔁 Step 7: Add a Drill-through Filter (Region → Detail Page)
+
+Create a new report page → name it “Region Detail.”
+
+Add a Drill-through filter (drag Region into the Drill-through field well).
+
+Add visuals to show sales by product or date.
+
+On your main dashboard, right-click a region → choose Drill-through → Region Detail.
+→ Takes you to the detailed page filtered by that region.
+
+🌈 Step 8: Use Conditional Formatting for High-Profit Regions
+
+Select the Table visual.
+
+Click Format → Conditional formatting → Background color (or Font color).
+
+Choose Based on field: Profit.
+
+Define a color gradient (e.g., green for high profit, red for low).
+
+☁️ Step 9: Publish to Power BI Service
+
+Save the file.
+
+Click Publish (Home tab).
+
+Select your Power BI Workspace.
+✅ The report is now online in Power BI Service.
+
+👥 Step 10: Share with a Colleague (Simulated Steps)
+
+In Power BI Service, open your published report.
+
+Click Share → enter your colleague’s email (must have Power BI license or access).
+
+Choose Allow reshare / build permissions (if needed).
+
+Click Send.
+
+⚙️ Step 11: Add a Custom “Sales Growth %” Measure (Quick Measure)
+
+Without DAX, use Quick Measures:
+
+Go to Modeling → New Quick Measure.
+
+Choose Calculation: Division.
+
+Set Numerator: This year’s Sales (or a field), Denominator: Previous year’s Sales.
+
+Rename the result as Sales Growth %.
+✅ This auto-generates DAX for you.
+
+⚡ Step 12: Optimize Dataset for Faster Refresh
+
+Remove unused columns (Model View → Right-click column → Delete).
+
+Disable Auto date/time if not needed.
+
+Use Import Mode instead of DirectQuery.
+
+Compress data types (e.g., use Whole Number for IDs, Date for date fields).
+
+🧩 Step 13: Troubleshoot – Slicers Not Affecting All Visuals
+
+Cause: Visual interactions are off.
+Fix:
+
+Select the slicer.
+
+Go to Format → Edit Interactions.
+
+Ensure Filter (not None) is selected for all visuals.
+→ Now slicer filters every visual correctly.
+
+🖼 Step 14: Embed Dashboard into PowerPoint
+
+In Power BI Service → Open your report.
+
+Click Share → Export → PowerPoint → Embed live data.
+
+This adds a live, interactive Power BI report slide (updates automatically).
+
+⏰ Step 15: Schedule Dataset Refresh
+
+In Power BI Service, go to Datasets → Schedule refresh.
+
+Set refresh frequency (daily, hourly, etc.).
+
+Configure gateway connection if data is on-premise.
+✅ Keeps your dashboard up to date automatically.
