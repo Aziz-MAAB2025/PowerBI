@@ -1,0 +1,179 @@
+📘 1️⃣ What does DAX stand for?
+
+DAX = Data Analysis Expressions
+
+It’s a formula language used in Power BI, Power Pivot, and Analysis Services to create:
+
+Calculated Columns
+
+Measures
+
+Tables
+
+Custom aggregations and filters
+
+💰 2️⃣ Write a DAX formula to sum the Sales column
+Total Sales = SUM(DAX_Practice_Data[Sales])
+
+
+✅ Explanation:
+SUM() adds up all values in the Sales column across the table.
+
+🧮 3️⃣ Difference between a Calculated Column and a Measure
+Feature	Calculated Column	Measure
+Evaluation Context	Calculated row-by-row	Calculated on aggregate (filtered) context
+Storage	Stored in the model (increases size)	Calculated on demand (no storage)
+Use Case	Used for per-row computations	Used for KPIs, visuals, aggregations
+
+Example:
+
+Calculated Column → Profit = Sales – Cost
+
+Measure → Total Profit = SUM(Sales) – SUM(Cost)
+
+📊 4️⃣ Use DIVIDE() to calculate Profit Margin (Profit/Sales)
+Profit Margin = DIVIDE(SUM(DAX_Practice_Data[Profit]), SUM(DAX_Practice_Data[Sales]), 0)
+
+
+✅ DIVIDE() safely handles division by zero.
+If you don’t have a Profit column, calculate it dynamically:
+
+Profit Margin = DIVIDE(SUM(DAX_Practice_Data[Sales]) - SUM(DAX_Practice_Data[Cost]), SUM(DAX_Practice_Data[Sales]), 0)
+
+🔢 5️⃣ What does COUNTROWS() do in DAX?
+
+COUNTROWS() returns the number of rows in a table or filtered table.
+
+Example:
+
+Row Count = COUNTROWS(DAX_Practice_Data)
+
+
+→ Returns 3 for your sample dataset.
+
+💵 6️⃣ Create a measure: Total Profit (Total Sales – Total Cost)
+Total Profit = SUM(DAX_Practice_Data[Sales]) - SUM(DAX_Practice_Data[Cost])
+
+📈 7️⃣ Measure: Average Sales per Product
+Average Sales per Product = AVERAGE(DAX_Practice_Data[Sales])
+
+
+✅ Or, to calculate total sales divided by distinct products:
+
+Average Sales per Product = 
+DIVIDE(SUM(DAX_Practice_Data[Sales]), DISTINCTCOUNT(DAX_Practice_Data[ProductID]))
+
+🏷 8️⃣ Use IF() to tag products as "High Profit" if Profit > 1000
+
+Calculated Column:
+
+Profit Tag = IF(DAX_Practice_Data[Sales] - DAX_Practice_Data[Cost] > 1000, "High Profit", "Low Profit")
+
+
+✅ Applies row by row.
+
+⚠️ 9️⃣ What is a Circular Dependency Error?
+
+A circular dependency occurs when a calculated column or measure depends on itself directly or indirectly — for example:
+
+Column A = [Column B] + 1  
+Column B = [Column A] + 1  
+
+
+Power BI cannot compute either column because both rely on each other’s result.
+
+⚙️ 🔟 Row Context vs. Filter Context
+Context Type	Description	Example
+Row Context	Evaluates expression for each row in a table	Profit = Sales - Cost
+Filter Context	Evaluates after filters from visuals or slicers are applied	Total Sales = SUM(Sales) filtered by Region or Date
+
+➡️ In short:
+
+Row context = current row in the table.
+
+Filter context = filters applied from the report visuals.
+
+📅 11️⃣ Measure: YTD Sales using TOTALYTD()
+YTD Sales = TOTALYTD(
+    SUM(DAX_Practice_Data[Sales]),
+    DAX_Practice_Data[Date]
+)
+
+
+✅ Calculates cumulative (year-to-date) sales for the year of each date in the dataset.
+
+🔁 12️⃣ Dynamic Measure Switch (Sales / Profit / Margin)
+
+Create a table manually:
+Measure Selector
+
+Measure Name
+Sales
+Profit
+Margin
+
+Create a measure:
+
+Dynamic Measure =
+SWITCH(
+    SELECTEDVALUE(MeasureSelector[Measure Name]),
+    "Sales", [Total Sales],
+    "Profit", [Total Profit],
+    "Margin", [Profit Margin]
+)
+
+
+Use this Dynamic Measure in visuals — controlled by a slicer on MeasureSelector[Measure Name].
+
+⚡ 13️⃣ Optimize a Slow DAX Measure using Variables (VAR)
+
+Before (inefficient):
+
+Profit Margin = 
+DIVIDE(SUM(DAX_Practice_Data[Sales]) - SUM(DAX_Practice_Data[Cost]), SUM(DAX_Practice_Data[Sales]))
+
+
+Optimized with VAR:
+
+Profit Margin =
+VAR TotalSales = SUM(DAX_Practice_Data[Sales])
+VAR TotalCost  = SUM(DAX_Practice_Data[Cost])
+RETURN
+DIVIDE(TotalSales - TotalCost, TotalSales)
+
+
+✅ Benefits: Variables compute once and reuse the result — improving performance and readability.
+
+🧮 14️⃣ Use CALCULATE() to override a filter
+All Region Sales = 
+CALCULATE(
+    SUM(DAX_Practice_Data[Sales]),
+    ALL(DAX_Practice_Data)
+)
+
+
+✅ CALCULATE() changes the filter context — here it removes all filters so you get the total sales across all regions.
+
+🏆 15️⃣ Measure: Highest Sales Amount
+Highest Sales = MAX(DAX_Practice_Data[Sales])
+
+
+Or, if you want the product with highest sales:
+
+Top Product Sales = 
+CALCULATE(
+    MAX(DAX_Practice_Data[Sales]),
+    FILTER(DAX_Practice_Data, DAX_Practice_Data[Sales] = MAX(DAX_Practice_Data[Sales]))
+)
+
+✅ Summary Table
+Task	DAX Formula	Purpose
+Total Sales	SUM([Sales])	Aggregate total sales
+Total Profit	SUM([Sales]) - SUM([Cost])	Calculate overall profit
+Profit Margin	DIVIDE(SUM([Sales])-SUM([Cost]), SUM([Sales]), 0)	Avoid division errors
+Average Sales per Product	DIVIDE(SUM([Sales]), DISTINCTCOUNT([ProductID]))	Sales per unique product
+Profit Tag	IF([Profit]>1000, "High","Low")	Classify rows
+YTD Sales	TOTALYTD(SUM([Sales]), [Date])	Year-to-date calculation
+Highest Sales	MAX([Sales])	Peak value
+Dynamic Measure	SWITCH(SELECTEDVALUE(...))	Interactive metric selector
+All Region Sales	CALCULATE(SUM([Sales]), ALL(...))	Ignore filters
