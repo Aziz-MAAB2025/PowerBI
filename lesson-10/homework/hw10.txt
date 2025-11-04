@@ -1,0 +1,223 @@
+📘 Dataset (Lesson 10: Sales Table)
+SaleID	ProductID	Amount	Region	SaleDate
+1	P1	1200	North	1/5/2023
+2	P2	800	South	1/10/2023
+3	P1	1500	North	1/15/2023
+4	P2	600	East	1/20/2023
+🧠 1️⃣ What does FILTER(Sales, Sales[Amount] > 1000) return?
+
+It returns a filtered table containing only rows where Amount > 1000.
+
+Resulting table:
+
+SaleID	ProductID	Amount	Region	SaleDate
+1	P1	1200	North	1/5/2023
+3	P1	1500	North	1/15/2023
+
+✅ Note: FILTER() does not aggregate — it only returns a table object, typically used inside other functions like CALCULATE() or SUMX().
+
+💰 2️⃣ Write a measure: High Sales (sums Amount where Amount > 1000)
+High Sales =
+CALCULATE(
+    SUM(Sales[Amount]),
+    FILTER(Sales, Sales[Amount] > 1000)
+)
+
+
+✅ This sums Amount only for rows where Amount > 1000.
+Result = 1200 + 1500 = 2700
+
+🌍 3️⃣ How does ALLEXCEPT(Sales, Sales[Region]) differ from ALL(Sales)?
+Function	Behavior
+ALL(Sales)	Removes all filters from the Sales table.
+ALLEXCEPT(Sales, Sales[Region])	Removes all filters except Region. That means it keeps Region filters but clears all others (like Product or Date).
+
+Example:
+If you’re showing totals by Region, ALLEXCEPT lets you compare within each region, while ALL() compares across all regions.
+
+🧩 4️⃣ Use SWITCH to Categorize Amounts
+Amount Category =
+SWITCH(
+    TRUE(),
+    Sales[Amount] > 1000, "High",
+    Sales[Amount] >= 500 && Sales[Amount] <= 1000, "Medium",
+    "Low"
+)
+
+
+✅ The TRUE() pattern lets you handle multiple logical conditions cleanly.
+
+Amount	Category
+1200	High
+800	Medium
+1500	High
+600	Medium
+🎯 5️⃣ What is the purpose of ALLSELECTED?
+
+ALLSELECTED() returns all rows that are visible given the user’s current slicer selections, but it ignores visual-level filters.
+
+✅ Use Case: When you want percentages or rankings to respect user slicers but not be limited by what’s currently displayed in a chart or table.
+
+📊 6️⃣ Measure: Regional Sales %
+Regional Sales % =
+DIVIDE(
+    SUM(Sales[Amount]),
+    CALCULATE(
+        SUM(Sales[Amount]),
+        ALLEXCEPT(Sales, Sales[Region])
+    )
+)
+
+
+✅ This shows each sale’s contribution to its Region’s total (not global total).
+
+For Region = North:
+
+Total = 1200 + 1500 = 2700
+
+SaleID 1 → 1200 / 2700 = 44.4%
+
+SaleID 3 → 1500 / 2700 = 55.6%
+
+🔀 7️⃣ Create a Dynamic Measure (toggle between SUM, AVERAGE, COUNT of Amount)
+
+Assume a slicer table: Metric Selector[Metric] with values:
+
+Metric
+Sum
+Average
+Count
+
+Then create:
+
+Dynamic Amount Measure =
+SWITCH(
+    SELECTEDVALUE(MetricSelector[Metric]),
+    "Sum", SUM(Sales[Amount]),
+    "Average", AVERAGE(Sales[Amount]),
+    "Count", COUNT(Sales[Amount]),
+    BLANK()
+)
+
+
+✅ The measure changes dynamically depending on the slicer choice.
+
+🚫 8️⃣ Use FILTER inside CALCULATE to Exclude "Furniture" Sales
+
+Assume there’s a related Products table with Category column:
+
+Non-Furniture Sales =
+CALCULATE(
+    SUM(Sales[Amount]),
+    FILTER(Products, Products[Category] <> "Furniture")
+)
+
+
+✅ Excludes any sales where product category = Furniture.
+
+⚠️ 9️⃣ Why might ALLSELECTED behave unexpectedly in a Pivot Table?
+
+Because ALLSELECTED depends on the user’s visible selection, it can behave differently if:
+
+The Pivot Table applies additional filters at the visual or subtotal level.
+
+Context changes when users collapse/expand categories or add/removes rows.
+
+✅ It respects slicers, but visual totals can differ depending on hierarchy or layout.
+
+🌐 🔟 Write a Measure that Ignores Filters from Region
+Total Sales (Ignore Region) =
+CALCULATE(
+    SUM(Sales[Amount]),
+    ALL(Sales[Region])
+)
+
+
+✅ Removes region-level filters but respects other filters (like Date or Product).
+
+⚡ 11️⃣ Optimize High Sales Measure
+
+Original:
+
+High Sales =
+CALCULATE(SUM(Sales[Amount]), FILTER(Sales, Sales[Amount] > 1000))
+
+
+Optimized (replace FILTER with Boolean filter):
+
+High Sales =
+CALCULATE(
+    SUM(Sales[Amount]),
+    Sales[Amount] > 1000
+)
+
+
+✅ Simpler and faster because CALCULATE() accepts direct Boolean filters.
+
+🏆 12️⃣ Measure: Top 2 Products by Sales
+Top 2 Products =
+CALCULATE(
+    SUM(Sales[Amount]),
+    FILTER(
+        TOPN(2, SUMMARIZE(Sales, Sales[ProductID], "TotalSales", SUM(Sales[Amount])), [TotalSales], DESC),
+        TRUE()
+    )
+)
+
+
+✅ TOPN() ranks the products by sales amount, and this measure sums the top 2.
+
+🧭 13️⃣ Use ALLSELECTED() with No Parameters
+Total Sales (AllSelected) =
+CALCULATE(
+    SUM(Sales[Amount]),
+    ALLSELECTED()
+)
+
+
+✅ Keeps slicer filters, but ignores visual-level filters or context from specific charts.
+
+🐞 14️⃣ Debug: SWITCH Measure Returns Incorrect Values in Matrix
+
+Common causes:
+
+The SWITCH uses SELECTEDVALUE() on a field that has multiple values in the current context.
+→ Result: returns blank or default branch.
+
+Fix: use an explicit aggregator or wrap in HASONEVALUE().
+
+✅ Example fix:
+
+Metric Logic =
+SWITCH(
+    TRUE(),
+    HASONEVALUE(MetricSelector[Metric]) && SELECTEDVALUE(MetricSelector[Metric]) = "Sum", SUM(Sales[Amount]),
+    HASONEVALUE(MetricSelector[Metric]) && SELECTEDVALUE(MetricSelector[Metric]) = "Average", AVERAGE(Sales[Amount]),
+    HASONEVALUE(MetricSelector[Metric]) && SELECTEDVALUE(MetricSelector[Metric]) = "Count", COUNT(Sales[Amount]),
+    BLANK()
+)
+
+🔁 15️⃣ Simulate a "Reset Filters" Button using ALL()
+Total Sales (Reset Filters) =
+CALCULATE(
+    SUM(Sales[Amount]),
+    ALL(Sales)
+)
+
+
+✅ Add a button that triggers a bookmark showing this measure or resets slicers — mimicking a “Reset All Filters” action.
+
+✅ Lesson 10 Summary
+Task	Key Function	Example
+Filter table	FILTER(Sales, Sales[Amount]>1000)	Returns filtered rows
+High Sales measure	CALCULATE(SUM(...), FILTER(...))	Conditional total
+Region filter control	ALLEXCEPT(Sales, Sales[Region])	Keep region context
+Categorize Amount	SWITCH(TRUE(),...)	Conditional logic
+ALLSELECTED use	Respect slicers, ignore visuals	% contribution
+Regional %	ALLEXCEPT(Sales, Sales[Region])	Relative to region
+Dynamic measure	SWITCH(SELECTEDVALUE(...))	Slicer-driven logic
+Exclude Furniture	FILTER(Products, Products[Category]<>"Furniture")	Conditional filter
+Ignore Region	ALL(Sales[Region])	Remove filter
+Optimization	Boolean filter instead of FILTER()	Faster calc
+Top 2 Products	TOPN() + FILTER()	Ranking
+Reset filters	ALL(Sales)	Global total
