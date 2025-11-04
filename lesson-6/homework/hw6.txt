@@ -1,1 +1,151 @@
+Three types of visuals you can create in Power BI:
 
+Bar chart – Displays data in horizontal bars.
+
+Column chart – Displays data in vertical columns.
+
+Line chart – Shows trends over time.
+(Other examples: Pie charts, Cards, Maps, Matrix visuals, etc.)
+
+2️⃣ How to add a slicer to a report:
+
+In Power BI Desktop, open your report page.
+
+Go to the Visualizations pane → click the Slicer icon.
+
+Drag a field (e.g., Quarter) into the Field well of the slicer.
+
+Resize and position the slicer on your canvas.
+
+This allows you to filter visuals interactively by the selected field value.
+
+3️⃣ Difference between a Bar Chart and a Column Chart:
+Feature	Bar Chart	Column Chart
+Orientation	Horizontal bars	Vertical bars
+Use Case	Better for comparing long category names	Better for showing trends across time or categories
+4️⃣ How to change the color of a visual background:
+
+Select the visual.
+
+Go to the Format Visual pane (paint roller icon).
+
+Expand the Visual section → Background.
+
+Turn Background ON and choose a color & transparency level.
+
+5️⃣ What does “Drill-down” mean in a visual?
+
+Drill-down allows you to explore data at multiple levels of hierarchy — for example,
+Region → Product → Quarter.
+By clicking a data point, users can see more detailed data (e.g., from total regional sales down to product-level sales).
+
+🧩 Hands-on Power BI Steps (using Sales_Interactive.xlsx)
+6️⃣ Create a Bar Chart showing SalesAmount by Region
+
+Load Sales_Interactive.xlsx into Power BI.
+
+Select Bar Chart from the Visualizations pane.
+
+Drag Region → Y-axis (or Category).
+
+Drag SalesAmount → X-axis (or Values).
+
+7️⃣ Add a Slicer for Quarter to filter all visuals
+
+Add a Slicer visual to the canvas.
+
+Drag Quarter → Field.
+
+Test by clicking Q1 or Q2 — all visuals update automatically.
+
+8️⃣ Format the Bar Chart to show Data Labels
+
+Select the bar chart.
+
+In the Format pane, go to Data labels → turn ON.
+
+Optionally customize font size, color, and display units.
+
+9️⃣ Use a Line Chart to show SalesAmount trends over Quarter
+
+Insert a Line Chart visual.
+
+Drag Quarter → X-axis.
+
+Drag SalesAmount → Y-axis.
+This shows how sales change across quarters.
+
+🔟 Add a Tooltip to display Product details on hover
+
+Create a new Tooltip page (via Insert → Page → Tooltip).
+
+Add a table or card showing Product and SalesAmount.
+
+Go back to your main report.
+
+In the bar chart’s Format > Tooltip, select your custom tooltip page.
+Now, hovering over a bar shows product details.
+
+11️⃣ Sync Slicers across multiple report pages
+
+Select a slicer (e.g., Quarter).
+
+Go to View → Sync slicers pane.
+
+Choose which pages the slicer applies to.
+
+Turn Sync ON (and optionally Visible).
+
+This keeps filters consistent across pages.
+
+12️⃣ Create a Custom Visual with Dynamic Measure Selection (Sales vs Profit)
+
+Add a What-If parameter or create a field selector table with “Sales” and “Profit”.
+
+Create a DAX measure like:
+
+Selected Measure =
+SWITCH(
+    SELECTEDVALUE(MeasureSelector[Measure]),
+    "Sales", SUM(Sales_Interactive[SalesAmount]),
+    "Profit", SUM(Sales_Interactive[Profit]),
+    BLANK()
+)
+
+
+Use Selected Measure in your visual to toggle dynamically.
+
+13️⃣ Implement a Hierarchy for Region > Product > Quarter Drill-down
+
+In the Fields pane, drag Product under Region, then Quarter under Product.
+
+Add this hierarchy to a visual (e.g., column chart).
+
+Enable Drill Mode (the double down-arrow icon).
+
+Click a bar to drill down from Region → Product → Quarter.
+
+14️⃣ Use Bookmarks to toggle between two visuals in the same space
+
+Create two visuals (e.g., Bar Chart & Line Chart) in the same spot.
+
+Show the Bar Chart, hide the Line Chart → Create Bookmark 1.
+
+Show the Line Chart, hide the Bar Chart → Create Bookmark 2.
+
+Add Buttons and link each to a bookmark.
+This lets users toggle between visuals interactively.
+
+15️⃣ Optimize a slow-rendering report with 10+ visuals
+
+✅ Tips:
+
+Use Aggregations or Data reduction (summarized tables).
+
+Limit visuals per page (combine with tabs or bookmarks).
+
+Turn off unnecessary Interactions.
+
+Use Import mode instead of DirectQuery when possible.
+
+Simplify DAX and remove unused fields.
