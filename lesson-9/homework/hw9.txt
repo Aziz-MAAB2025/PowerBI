@@ -1,0 +1,202 @@
+📘 Dataset Overview
+SaleID	ProductID	CustomerID	Quantity	UnitPrice	Category
+1	P1	C1	2	100	Electronics
+2	P2	C2	1	50	Clothing
+3	P1	C1	3	100	Electronics
+🧠 1️⃣ What is Row Context? Give an example in a calculated column.
+
+Row Context means DAX evaluates an expression for each row in a table — as if looping through every row.
+
+✅ Example (Calculated Column):
+
+TotalPrice = Sales[Quantity] * Sales[UnitPrice]
+
+
+For each row, Power BI multiplies the row’s Quantity by UnitPrice to calculate that row’s TotalPrice.
+
+SaleID	Quantity	UnitPrice	TotalPrice
+1	2	100	200
+2	1	50	50
+3	3	100	300
+💰 2️⃣ Write a measure that finds total sales
+
+A measure operates in filter context, aggregating across rows:
+
+Total Sales = SUMX(Sales, Sales[Quantity] * Sales[UnitPrice])
+
+
+✅ Uses SUMX() to iterate through rows (row context inside measure) and sum up total prices.
+
+🔗 3️⃣ Use RELATED() to fetch the Name from the Customers table into the Sales table
+
+Assume another table:
+Customers(CustomerID, Name, Region)
+
+In the Sales table (calculated column):
+
+Customer Name = RELATED(Customers[Name])
+
+
+✅ Requirements:
+
+A relationship must exist between Sales[CustomerID] and Customers[CustomerID].
+
+RELATED() works from many → one direction (Sales → Customers).
+
+⚙️ 4️⃣ What does this return?
+CALCULATE(SUM(Sales[Quantity]), Sales[Category] = "Electronics")
+
+
+✅ It returns the sum of Quantity for rows where Category = "Electronics"
+Equivalent to filtering the Sales table before summing Quantity.
+
+Category	Quantity	Sum
+Electronics	2 + 3	5
+Clothing	ignored	—
+
+Result: 5
+
+🧩 5️⃣ Difference between VAR and RETURN in DAX
+Term	Purpose
+VAR	Declares a temporary variable or table inside a DAX expression.
+RETURN	Specifies what the formula should output, using variables if needed.
+
+Example:
+
+Profit Margin =
+VAR SalesTotal = SUM(Sales[Quantity] * Sales[UnitPrice])
+VAR CostTotal  = SUM(Sales[Cost])
+RETURN
+DIVIDE(SalesTotal - CostTotal, SalesTotal)
+
+
+→ VAR defines variables; RETURN gives the final result.
+
+🧮 6️⃣ Create a Calculated Column in Sales called TotalPrice using Row Context
+TotalPrice = Sales[Quantity] * Sales[UnitPrice]
+
+
+✅ Evaluated row by row using row context.
+
+💡 7️⃣ Write a Measure: Electronics Sales
+Electronics Sales =
+CALCULATE(
+    SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]),
+    Sales[Category] = "Electronics"
+)
+
+
+✅ Only sums total sales for rows where Category = Electronics.
+
+🧾 8️⃣ Use ALL(Sales[Category]) in a Measure to Show Total Sales Ignoring Category Filters
+Total Sales (Ignore Category) =
+CALCULATE(
+    SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]),
+    ALL(Sales[Category])
+)
+
+
+✅ ALL() removes any slicer or visual filters on Category, showing total company-wide sales.
+
+⚠️ 9️⃣ Fix: Calculated column using RELATED(Customers[Region]) returns blanks
+
+Cause:
+There is no relationship (or wrong direction) between Sales[CustomerID] and Customers[CustomerID].
+
+Fix:
+
+Go to Model View.
+
+Create or fix the relationship:
+
+Sales[CustomerID] → Customers[CustomerID]
+
+Ensure the direction is Many-to-One (Sales → Customers).
+
+Now RELATED(Customers[Region]) will work correctly.
+
+🔄 🔟 Why does CALCULATE override existing filters?
+
+CALCULATE() modifies or replaces the filter context with new filters you specify.
+It’s the only DAX function that can change filter context.
+
+Example:
+
+CALCULATE(SUM(Sales[Quantity]), Sales[Category] = "Electronics")
+
+
+If a slicer filters Category = Clothing, CALCULATE overrides it to Electronics.
+
+💵 11️⃣ Measure: Average UnitPrice of Products
+Average UnitPrice = AVERAGE(Sales[UnitPrice])
+
+
+✅ Returns the average price per product, respecting active filters.
+
+🧠 12️⃣ Use VAR to Store a Temporary Table (Quantity > 2), then Count Rows
+High Quantity Count =
+VAR HighQty =
+    FILTER(Sales, Sales[Quantity] > 2)
+RETURN
+COUNTROWS(HighQty)
+
+
+✅ Filters the Sales table, stores it in HighQty, then counts matching rows.
+In your dataset → only SaleID 3 qualifies → result = 1
+
+📊 13️⃣ Measure: % of Category Sales
+% of Category Sales =
+DIVIDE(
+    SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]),
+    CALCULATE(SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]), ALL(Sales[Category]))
+)
+
+
+✅ Shows each category’s contribution to total sales (ignores category filters in the denominator).
+
+🎛 14️⃣ Simulate a “Remove Filters” Button using ALL()
+
+Create a measure:
+
+Total Sales (All) =
+CALCULATE(
+    SUMX(Sales, Sales[Quantity] * Sales[UnitPrice]),
+    ALL(Sales)
+)
+
+
+Add a button or bookmark in Power BI that switches visuals between:
+
+Filtered view
+
+“All” measure (removes filters)
+
+✅ Works as a Reset Filters / Show All button.
+
+🧩 15️⃣ Troubleshoot: CALCULATE Measure Ignores a Slicer
+
+Possible causes:
+
+The measure explicitly removes filters using ALL() or REMOVEFILTERS().
+
+The slicer field is not related to the table used in the measure.
+
+Relationship is inactive — fix by activating or using USERELATIONSHIP() in DAX.
+
+The slicer is filtering a different table (not connected through the model).
+
+✅ Solution: Check the relationship model and remove unnecessary ALL() calls.
+
+✅ Summary Table
+Task	DAX Formula	Concept
+Row Context Example	Sales[Quantity] * Sales[UnitPrice]	Row-by-row calc
+Total Sales	SUMX(Sales, Sales[Quantity]*Sales[UnitPrice])	Measure
+RELATED Example	RELATED(Customers[Name])	Bring related data
+CALCULATE Example	CALCULATE(SUM(Sales[Quantity]), Sales[Category]="Electronics")	Override filters
+VAR / RETURN	Define temp vars → final output	Code optimization
+Electronics Sales	CALCULATE with category filter	Targeted measure
+Ignore Category	CALCULATE + ALL()	Removes filters
+Fix RELATED blanks	Add proper relationship	Data modeling
+Average UnitPrice	AVERAGE(Sales[UnitPrice])	Aggregation
+High Quantity Count	VAR + FILTER + COUNTROWS	Table variable
+% of Category Sales	DIVIDE(..., ALL(Category))	Contribution metric
